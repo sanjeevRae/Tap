@@ -8,7 +8,7 @@ export function ProtonLogo({ className }: { className?: string }) {
       <img
         src="/logo.svg"
         alt="ChitraTap"
-        className="h-10 w-10"
+        className="h-12 w-12"
       />
 
       <span className="text-[1.05rem] font-semibold tracking-tight text-[#471dce]">
