@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
+import { RequestForm } from "@/components/proton/request-form";
+import { WhatsappWidget } from "@/components/proton/whatsapp-widget";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
@@ -67,6 +69,8 @@ export default function RootLayout({
         className={`${inter.variable} ${serif.variable} antialiased bg-background text-foreground`}
       >
         {children}
+        <WhatsappWidget />
+        <RequestForm />
         <Toaster />
       </body>
     </html>

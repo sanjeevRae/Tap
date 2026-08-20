@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { Menu, ChevronDown, ChevronRight } from "lucide-react";
 import { ProtonLogo } from "./logo";
+import { openRequestForm } from "./request-form";
 
 import {
   Sheet,
@@ -374,12 +375,13 @@ export function Header() {
                 Login
               </a>
 
-              <a
-                href="/login"
+              <button
+                type="button"
+                onClick={openRequestForm}
                 className="hidden items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2 text-[13px] font-semibold text-brand-foreground shadow-brand transition-all hover:-translate-y-0.5 hover:shadow-lg md:inline-flex"
               >
-                Get Tap Chitra
-              </a>
+                Contact Us
+              </button>
 
               {/* Mobile trigger */}
               <Sheet>
@@ -467,12 +469,13 @@ export function Header() {
 
                     {/* Mobile buttons */}
                     <div className="border-t border-border p-4">
-                      <a
-                        href="/login"
+                      <button
+                        type="button"
+                        onClick={openRequestForm}
                         className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground shadow-brand"
                       >
                         Get Tap Chitra
-                      </a>
+                      </button>
 
                       <a
                         href="/login"

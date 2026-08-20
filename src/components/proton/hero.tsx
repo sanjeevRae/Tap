@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import { openRequestForm } from "./request-form";
 
 export function Hero() {
   return (
@@ -27,12 +28,13 @@ export function Hero() {
           </p>
 
           <div className="mt-9 flex flex-col items-center gap-4">
-            <a
-              href="/login"
+            <button
+              type="button"
+              onClick={openRequestForm}
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand px-6 text-base font-semibold text-white shadow-[0_10px_20px_rgba(109,74,255,0.22)] transition-all hover:-translate-y-0.5 hover:bg-brand/90 hover:shadow-[0_14px_26px_rgba(109,74,255,0.26)]"
-                >
+            >
               Get Started
-            </a>
+            </button>
 
             <p className="inline-flex items-center gap-3 font-sans text-lg font-medium text-[#536273]">
               <CheckCircle2 className="h-5 w-5 text-[#667487]" strokeWidth={2} />
