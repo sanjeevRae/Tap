@@ -1,34 +1,46 @@
 "use client";
 
-import * as React from "react";
 import { motion } from "framer-motion";
-import { Lock, Heart, Crosshair, ArrowRight } from "lucide-react";
+import {
+  BadgeCheck,
+  Building2,
+  Hand,
+  MapPin,
+  Nfc,
+  Smartphone,
+} from "lucide-react";
 import { useInView } from "./use-in-view";
 
-const pillars = [
+const reasons = [
   {
-    icon: Lock,
-    eyebrow: "Private by default",
-    title: "Backed by more than a decade of privacy leadership",
-    desc: "Proton VPN keeps what you watch, click, and search private from trackers, advertisers, governments, and even Proton itself.",
-    stat: "10+ years",
-    statLabel: "of privacy leadership",
+    icon: Nfc,
+    title: "One tap, everything about your business",
+    desc: "Give customers instant access to your business profile, services, contact details, social media, location, reviews, and more from a single NFC tap or QR scan.",
   },
   {
-    icon: Heart,
-    eyebrow: "People before profit",
-    title: "Created by people who live and breathe digital freedom",
-    desc: "Proton's entire ecosystem is committed to keeping your information safe without slowing you down or selling you out.",
-    stat: "100M+",
-    statLabel: "people protected",
+    icon: Smartphone,
+    title: "No app. No complicated setup.",
+    desc: "Customers don't need to download anything. They simply tap or scan and your digital business profile opens instantly on their phone.",
   },
   {
-    icon: Crosshair,
-    eyebrow: "Proven under pressure",
-    title: "Trusted by journalists and activists in high-risk places",
-    desc: "Built to protect you no matter the challenge — relied on by those facing real-world threats in some of the world's toughest environments.",
-    stat: "140+",
-    statLabel: "countries available",
+    icon: Building2,
+    title: "Your business, available anywhere",
+    desc: "Whether customers are at your shop or discovering you online, your digital profile makes it easy to find your information, location, contact details, and online presence.",
+  },
+  {
+    icon: Hand,
+    title: "Update once, change everything",
+    desc: "Changed your phone number, menu, social media, or business information? Update it from your dashboard without replacing your physical stand.",
+  },
+  {
+    icon: MapPin,
+    title: "Build trust with real business information",
+    desc: "Show your business information, Google rating, reviews, location, opening hours, and social profiles in one convenient place.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Made for every business",
+    desc: "From cafes and restaurants to salons, hotels, shops, offices, and professionals, ChitraTap gives any business a simple way to build a stronger digital presence.",
   },
 ];
 
@@ -36,65 +48,61 @@ export function WhyChoose() {
   const { ref, inView } = useInView<HTMLDivElement>();
 
   return (
-    <section id="why" className="relative overflow-hidden bg-ink py-20 text-white sm:py-28">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-20 left-1/4 h-[400px] w-[400px] rounded-full bg-brand/25 blur-[130px]" />
-        <div className="absolute bottom-0 right-1/4 h-[360px] w-[360px] rounded-full bg-[#2bb4ff]/15 blur-[130px]" />
-        <div className="absolute inset-0 bg-grid opacity-[0.08]" />
-      </div>
-
+    <section
+      id="why"
+      className="relative overflow-hidden border-t border-[#f2efff] bg-white py-16 sm:py-20 lg:py-24"
+    >
       <div className="container-proton" ref={ref}>
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
-            Why choose Proton VPN
-          </span>
-          <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem]">
-            The preferred VPN for millions protecting their privacy and freedom
-            online.
-          </h2>
-        </div>
+        {/* Section Heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="text-center font-sans text-3xl font-medium tracking-tight text-[#2c1a7a] sm:text-4xl lg:text-[2.5rem]"
+        >
+          Why choose ChitraTap?
+        </motion.h2>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {pillars.map((p, i) => (
-            <motion.article
-              key={p.eyebrow}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.65, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur transition-all hover:border-white/20 hover:bg-white/[0.07]"
-            >
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-white shadow-brand">
-                  <p.icon className="h-5 w-5" />
+        {/* Feature Grid */}
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">
+          {reasons.map((reason, index) => {
+            const Icon = reason.icon;
+
+            return (
+              <motion.article
+                key={reason.title}
+                initial={{ opacity: 0, y: 24 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{
+                  duration: 0.55,
+                  delay: index * 0.07,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="group min-h-[210px] rounded-[1.25rem] bg-[#f5f6f8] px-6 py-6 transition-all duration-300 hover:-translate-y-1 hover:bg-[#f7f5ff] hover:shadow-[0_12px_32px_rgba(49,31,130,0.07)] sm:min-h-[215px] sm:px-7"
+              >
+                {/* Icon */}
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#e2e5ec] bg-white text-brand shadow-[0_8px_20px_rgba(49,31,130,0.05)] transition-transform duration-300 group-hover:scale-105">
+                  <Icon
+                    className="h-5 w-5"
+                    strokeWidth={2.1}
+                  />
                 </span>
-                <span className="text-xs font-semibold uppercase tracking-wider text-white/60">
-                  {p.eyebrow}
-                </span>
-              </div>
 
-              <h3 className="text-xl font-semibold leading-snug">{p.title}</h3>
-              <p className="mt-3 text-sm text-white/70">{p.desc}</p>
+                {/* Title */}
+                <h3 className="mt-5 font-sans text-lg font-semibold leading-snug text-[#2c1a7a]">
+                  {reason.title}
+                </h3>
 
-              <div className="mt-6 flex items-end justify-between border-t border-white/10 pt-5">
-                <div>
-                  <p className="text-3xl font-semibold tracking-tight text-white">
-                    {p.stat}
-                  </p>
-                  <p className="text-xs text-white/50">{p.statLabel}</p>
-                </div>
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-white/80 transition-all hover:gap-2 hover:text-white"
-                >
-                  View details
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-
-              {/* corner glow */}
-              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand/20 opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
-            </motion.article>
-          ))}
+                {/* Description */}
+                <p className="mt-3 font-sans text-sm leading-6 text-[#536273]">
+                  {reason.desc}
+                </p>
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </section>

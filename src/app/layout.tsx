@@ -1,27 +1,28 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
 
-const serif = Source_Serif_4({
-  variable: "--font-display",
+const serif = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["600", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Proton VPN | The best VPN for speed and security",
+  title: "Tap Chitra | The best VPN for speed and security",
   description:
-    "Get fast, secure VPN service in 140+ countries. Download our free VPN now — or check out Proton VPN Plus for even more premium features.",
+    "Get fast, secure VPN service in 140+ countries. Download our free VPN now — or check out Tap Chitra Plus for even more premium features.",
   keywords: [
     "VPN",
-    "Proton VPN",
+    "Tap Chitra",
     "free VPN",
     "secure VPN",
     "privacy",
@@ -29,19 +30,19 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Proton AG" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
-    title: "Proton VPN | The best VPN for speed and security",
+    title: "Tap Chitra | The best VPN for speed and security",
     description:
       "Get fast, secure VPN service in 140+ countries. Download our free VPN now.",
     url: "https://protonvpn.com",
-    siteName: "Proton VPN",
+    siteName: "Tap Chitra",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Proton VPN | The best VPN for speed and security",
+    title: "Tap Chitra | The best VPN for speed and security",
     description:
       "Get fast, secure VPN service in 140+ countries. Download our free VPN now.",
   },

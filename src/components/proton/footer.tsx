@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { Globe, ChevronDown } from "lucide-react";
+import { Globe, Mail, MapPin } from "lucide-react";
 import { ProtonLogo } from "./logo";
 import {
   Select,
@@ -12,133 +11,164 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+
 const columns = [
   {
-    heading: "Features",
+    heading: "Product",
     links: [
-      "Free VPN",
-      "VPN servers",
-      "VPN for streaming",
-      "Netflix VPN",
-      "Secure Core VPN",
-      "VPN for Business",
+      "How it works",
+      "Features",
+      "NFC Business Stand",
+      "QR Code",
+      "Digital Business Profile",
+      "Business Dashboard",
+      "Pricing",
+    ],
+  },
+  {
+    heading: "For Businesses",
+    links: [
+      "Restaurants & Cafes",
+      "Hotels",
+      "Salons & Spas",
+      "Retail Shops",
+      "Offices",
+      "Professionals",
+      "All Businesses",
+    ],
+  },
+  {
+    heading: "Resources",
+    links: [
       "Getting started",
+      "How ChitraTap works",
+      "Help & Support",
+      "FAQs",
+      "Business Guide",
+      "Contact Support",
     ],
   },
   {
-    heading: "Platforms",
+    heading: "ChitraTech",
     links: [
-      "Download VPN",
-      "VPN for Windows",
-      "VPN for macOS",
-      "VPN for Android",
-      "VPN for iOS",
-      "VPN for Linux",
-      "VPN for Chrome",
-      "VPN for Firefox",
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      "About us",
-      "Proton Foundation",
+      "About ChitraTech",
+      "Our Products",
       "Blog",
-      "Careers — We're hiring",
-      "Threat model",
-      "Open source",
-    ],
-  },
-  {
-    heading: "Connect",
-    links: [
-      "Help and support",
-      "Business sales",
-      "Partners and affiliates",
-      "Press and media",
-      "Contact us",
-      "Live chat",
-      "Student discount",
+      "Careers",
+      "Contact Us",
     ],
   },
 ];
 
-const languages = [
-  "English", "Bahasa Indonesia", "Čeština", "Dansk", "Deutsch", "Español (España)",
-  "Español (Latinoamérica)", "Français", "Italiano", "Nederlands", "Norsk bokmål",
-  "Polski", "Português (Brasil)", "Português (Portugal)", "Română", "Suomi",
-  "Svenska", "Tiếng Việt", "Türkçe", "Русский", "عربي", "ไทย", "한국어", "日本語", "繁體中文",
-];
-
-const social = ["X", "in", "f", "ig", "yt"];
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-background">
+    <footer className="mt-auto border-t border-[#ebe9f5] bg-[#fbfaff]">
       <div className="container-proton py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_3fr]">
-          {/* Brand + language */}
+        {/* Main Footer */}
+        <div className="grid gap-12 lg:grid-cols-[1.15fr_3fr]">
+          {/* Brand */}
           <div>
             <ProtonLogo />
-            <p className="mt-4 max-w-xs text-sm text-ink-soft">
-              A better internet starts with privacy and freedom. Built by
-              Proton AG, Geneva, Switzerland.
+
+            <p className="mt-4 max-w-xs text-sm leading-6 text-ink-soft">
+              Digital tools that help businesses connect, grow, and build a
+              stronger online presence.
             </p>
-            <address className="mt-4 text-xs not-italic leading-relaxed text-muted-foreground">
-              Proton AG
-              <br />
-              Route de la Galaise 32
-              <br />
-              1228 Plan-les-Ouates
-              <br />
-              Geneva, Switzerland
-            </address>
 
-            <div className="mt-6 flex items-center gap-2">
-              <Globe className="h-4 w-4 text-muted-foreground" />
-              <Select defaultValue="English">
-                <SelectTrigger className="w-[180px] h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-72">
-                  {languages.map((l) => (
-                    <SelectItem key={l} value={l}>
-                      {l}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Location */}
+            <div className="mt-5 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>Kapan, Kathmandu, Nepal</span>
             </div>
 
-            <div className="mt-6 flex items-center gap-2">
-              {social.map((s) => (
-                <a
-                  key={s}
-                  href="#"
-                  aria-label={s}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-xs font-semibold text-ink-soft transition-colors hover:border-brand/40 hover:bg-accent hover:text-brand"
-                >
-                  {s}
-                </a>
-              ))}
-            </div>
+            {/* Email */}
+            <a
+              href="mailto:info@chitratech.com"
+              className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-brand"
+            >
+              <Mail className="h-4 w-4" />
+              info@chitratech.com
+            </a>
+
+
+            {/* Social Links */}
+<div className="mt-6 flex items-center gap-2">
+  <a
+  href="https://www.linkedin.com/company/chitratech"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="LinkedIn"
+  className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:bg-accent"
+>
+  <img
+    src="https://s.magecdn.com/social/tc-linkedin.svg"
+    alt="LinkedIn"
+    className="h-4 w-4"
+  />
+</a>
+
+  <a
+    href="https://www.tiktok.com/@chitratech"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="TikTok"
+    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:bg-accent"
+  >
+    <img
+      src="https://s.magecdn.com/social/tc-tiktok.svg"
+      alt="TikTok"
+      className="h-4 w-4"
+    />
+  </a>
+
+  <a
+    href="https://www.instagram.com/chitra.tech"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Instagram"
+    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:bg-accent"
+  >
+    <img
+      src="https://s.magecdn.com/social/tc-instagram.svg"
+      alt="Instagram"
+      className="h-4 w-4"
+    />
+  </a>
+
+  <a
+    href="https://www.facebook.com/people/Chitra-Tech/61589090079956/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Facebook"
+    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:bg-accent"
+  >
+    <img
+      src="https://s.magecdn.com/social/tc-facebook.svg"
+      alt="Facebook"
+      className="h-4 w-4"
+    />
+  </a>
+</div>      
+           
           </div>
 
-          {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-            {columns.map((col) => (
-              <div key={col.heading}>
+          {/* Link Columns */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
+            {columns.map((column) => (
+              <div key={column.heading}>
                 <p className="text-xs font-semibold uppercase tracking-wider text-ink">
-                  {col.heading}
+                  {column.heading}
                 </p>
+
                 <ul className="mt-4 space-y-2.5">
-                  {col.links.map((l) => (
-                    <li key={l}>
+                  {column.links.map((link) => (
+                    <li key={link}>
                       <a
                         href="#"
                         className="text-sm text-ink-soft transition-colors hover:text-brand"
                       >
-                        {l}
+                        {link}
                       </a>
                     </li>
                   ))}
@@ -148,26 +178,50 @@ export function Footer() {
           </div>
         </div>
 
-        {/* system status row */}
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center">
+        {/* Bottom Links */}
+        <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-brand">Privacy Policy</a>
-            <a href="#" className="hover:text-brand">Terms & conditions</a>
-            <a href="#" className="hover:text-brand">Transparency report</a>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              System status: All systems operational
-            </span>
+            <a
+              href="#"
+              className="transition-colors hover:text-brand"
+            >
+              Privacy Policy
+            </a>
+
+            <a
+              href="#"
+              className="transition-colors hover:text-brand"
+            >
+              Terms & Conditions
+            </a>
+
+            <a
+              href="#"
+              className="transition-colors hover:text-brand"
+            >
+              Refund Policy
+            </a>
+
+            <a
+              href="mailto:info@chitratech.com"
+              className="transition-colors hover:text-brand"
+            >
+              Contact
+            </a>
           </div>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-brand">Report abuse</a>
-            <a href="#" className="hover:text-brand">Report a problem</a>
+
+          {/* System Status */}
+          <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="h-2 w-2 rounded-full bg-green-500" />
+            ChitraTap is operational
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col items-start justify-between gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center">
-          <p>© 2026 Proton AG. All rights reserved.</p>
-          <p>Made with privacy in mind, in Switzerland.</p>
+        {/* Copyright */}
+        <div className="mt-6 flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 ChitraTech. All rights reserved.</p>
+
+          <p>ChitraTap — One tap. Your business, connected.</p>
         </div>
       </div>
     </footer>
