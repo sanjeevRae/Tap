@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "Chitra Tap | Smart NFC Business Stand",
+    title: "ChitraTap | Smart NFC Business Stand",
     description:
       "One tap or scan connects customers to your business information, social media, location, reviews, and more.",
     url: "https://tap.chitratech.com.np",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chitra Tap | Smart NFC Business Stand",
+    title: "ChitraTap | Smart NFC Business Stand",
     description:
       "Connect customers to your business instantly with ChitraTap NFC and QR technology.",
   },
