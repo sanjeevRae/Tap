@@ -182,21 +182,21 @@ export function Footer() {
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
             <a
-              href="#"
+              href="/privacy-policy"
               className="transition-colors hover:text-brand"
             >
               Privacy Policy
             </a>
 
             <a
-              href="#"
+              href="/terms-and-conditions"
               className="transition-colors hover:text-brand"
             >
               Terms & Conditions
             </a>
 
             <a
-              href="#"
+              href="/refund-policy"
               className="transition-colors hover:text-brand"
             >
               Refund Policy

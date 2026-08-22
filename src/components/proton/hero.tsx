@@ -6,7 +6,7 @@ import { openRequestForm } from "./request-form";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#f7f5ff] via-white to-white">
+    <section id="hero" className="relative overflow-hidden bg-gradient-to-b from-[#f7f5ff] via-white to-white">
       <div className="container-proton relative pt-15 pb-2 sm:pt-14 lg:pt-16">
         <motion.div
           initial={{ opacity: 0, y: 22 }}

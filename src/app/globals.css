@@ -284,7 +284,7 @@
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 9999;
+  z-index: 40;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -326,7 +326,7 @@
   position: fixed;
   bottom: 92px;
   right: 24px;
-  z-index: 9999;
+  z-index: 40;
   width: 320px;
   max-width: calc(100vw - 32px);
   background: #fff;
@@ -445,3 +445,19 @@
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
 }
+
+/* ===== Policy pages ===== */
+.policy-prose p { margin: 0 0 0.75rem; }
+.policy-prose ul, .policy-prose ol { margin: 0.5rem 0 0.9rem; padding-left: 1.4rem; }
+.policy-prose ul { list-style: disc; }
+.policy-prose ol { list-style: decimal; }
+.policy-prose li { margin: 0.3rem 0; padding-left: 0.25rem; }
+.policy-prose a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+.policy-prose blockquote { border-left: 3px solid #e5e5e5; padding-left: 1rem; color: #525252; font-style: italic; margin: 0.75rem 0; }
+.policy-prose img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.75rem 0; }
+.policy-prose h3, .policy-prose h4 { font-weight: 600; color: #171717; margin: 1rem 0 0.4rem; }
+.policy-prose hr { border-color: #f0f0f0; margin: 1.25rem 0; }
+
+/* MDXEditor in admin */
+.policy-editor { font-size: 0.875rem; }
+.policy-editor [data-toolbar] { flex-wrap: wrap; }

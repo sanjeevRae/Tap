@@ -5,6 +5,7 @@ import { Hero } from "@/components/proton/hero";
 import { ExposeSection } from "@/components/proton/expose-section";
 import { WhyChoose } from "@/components/proton/why-choose";
 import { Comparison } from "@/components/proton/comparison";
+import { Testimonial } from "@/components/proton/testimonial";
 import { Ecosystem } from "@/components/proton/ecosystem";
 import { Footer } from "@/components/proton/footer";
 
@@ -18,6 +19,7 @@ export default function Home() {
         <Comparison />
         <ExposeSection />
         <Ecosystem />
+        <Testimonial />
       </main>
       <Footer />
     </div>

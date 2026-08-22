@@ -2,17 +2,27 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin"
+      );
+    }
+
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
 
       allow create: if request.auth != null
         && request.auth.uid == userId
         && request.resource.data.uid == userId
         && request.resource.data.role == "user";
 
-      allow update: if request.auth != null
-        && request.auth.uid == userId
-        && resource.data.role == request.resource.data.role;
+      // Users can update their own profile but never change their role.
+      // Admins can update anyone including roles.
+      allow update: if request.auth != null && (
+        (request.auth.uid == userId
+          && resource.data.role == request.resource.data.role)
+        || isAdmin()
+      );
     }
 
     match /sites/{siteId} {
@@ -20,7 +30,7 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if request.auth != null
-        && resource.data.ownerId == request.auth.uid;
+        && (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
     match /qr_codes/{code} {
@@ -36,6 +46,17 @@ service cloud.firestore {
     match /analytics_events/{eventId} {
       allow read: if request.auth != null;
       allow create: if true;
+    }
+
+    // Policy management: public read of published policies, admin-only writes.
+    match /policies/{policyId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      match /sections/{sectionId} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
     }
   }
 }

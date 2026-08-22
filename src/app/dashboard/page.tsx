@@ -33,6 +33,7 @@ import {
   Upload,
   User,
   Globe2,
+  ShieldCheck,
 } from "lucide-react";
 import { onAuthStateChanged, signOut, updateProfile, type User as FirebaseUser } from "@firebase/auth";
 import { doc, updateDoc } from "@firebase/firestore";
@@ -106,7 +107,12 @@ export default function DashboardPage() {
       }
       try {
         const userProfile = (await getUserProfile(currentUser.uid)) ?? (await ensureUserProfile(currentUser));
-        const activeSite = await getOrCreateSite(currentUser.uid, currentUser.email || "", userProfile.name);
+        // Admin impersonation: load the target user's site instead of the admin's own.
+        const impersonateUid = sessionStorage.getItem("tapchitra_impersonate");
+        const effectiveUser = impersonateUid
+          ? { uid: impersonateUid, email: currentUser.email || "", displayName: userProfile.name }
+          : { uid: currentUser.uid, email: currentUser.email || "", displayName: userProfile.name };
+        const activeSite = await getOrCreateSite(effectiveUser.uid, effectiveUser.email, effectiveUser.displayName);
         setUser(currentUser);
         setProfile(userProfile);
         setSite(activeSite);
@@ -202,6 +208,11 @@ export default function DashboardPage() {
             <h1 className="text-sm font-medium tracking-tight text-neutral-900 md:text-base">{navItems.find((item) => item.id === section)?.label}</h1>
           </div>
           <div className="flex items-center gap-1.5">
+            {profile.role === "admin" ? (
+              <a href="/admin" className="mr-1 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 transition hover:bg-blue-100">
+                <ShieldCheck className="h-3.5 w-3.5" />Admin
+              </a>
+            ) : null}
             <button onClick={() => setProfileOpen(true)} className="grid h-8 w-8 place-items-center overflow-hidden rounded-full ring-1 ring-neutral-200 transition hover:ring-neutral-300" type="button" aria-label="Account profile">
               {profile.photoURL || site.business.logo ? <img src={profile.photoURL || site.business.logo} alt="" className="h-full w-full object-cover" /> : <User className="h-4 w-4 text-neutral-500" />}
             </button>
@@ -438,8 +449,129 @@ function QrPanel({ site, setSite, publicUrl }: any) {
 }
 
 function AnalyticsPanel({ site }: { site: TapSite }) {
-  const clicks = site.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
-  return <div className="grid gap-4"><div className="grid gap-4 sm:grid-cols-3"><Stat label="Scans" value={site.analytics.scans} /><Stat label="Link Clicks" value={site.analytics.linkClicks || clicks} /><Stat label="Active Links" value={site.links.filter(l=>l.enabled).length} /></div><Card><p className="text-sm font-semibold tracking-tight">Scan Trend</p>{site.analytics.scans || site.analytics.dailyScans.length ? <MiniChart values={site.analytics.dailyScans} tall /> : <EmptyState text="No scans yet. Share or print your QR code to start collecting analytics." />}</Card><Card><p className="text-sm font-semibold tracking-tight">Link Performance</p><div className="mt-4 space-y-1.5">{site.links.map(link=><div key={link.id} className="flex items-center justify-between rounded-md px-3 py-2 text-sm transition hover:bg-neutral-50"><span className="text-neutral-700">{link.label}</span><span className="text-xs text-neutral-500">{link.clicks || 0} clicks</span></div>)}</div></Card></div>;
+  const totalClicks = site.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+  const clicks = site.analytics.linkClicks || totalClicks;
+  const scans = site.analytics.scans || 0;
+  const ctr = scans > 0 ? Math.round((clicks / scans) * 100) : 0;
+  const activeLinks = site.links.filter((l) => l.enabled).length;
+
+  const daily = site.analytics.dailyScans || [];
+  const last7 = daily.slice(-7);
+  const weekScans = last7.reduce((a, b) => a + b, 0);
+  const prevWeek = daily.slice(-14, -7).reduce((a, b) => a + b, 0);
+  const weekChange = prevWeek > 0 ? Math.round(((weekScans - prevWeek) / prevWeek) * 100) : weekScans > 0 ? 100 : 0;
+  const bestDayIndex = daily.length ? daily.indexOf(Math.max(...daily)) : -1;
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const bestDay = bestDayIndex >= 0 ? dayNames[bestDayIndex % 7] : "—";
+
+  const sortedLinks = [...site.links].sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+  const maxClicks = Math.max(...sortedLinks.map((l) => l.clicks || 0), 1);
+  const topLink = sortedLinks[0];
+
+  return (
+    <div className="grid gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Stat label="Total Scans" value={scans} hint="QR page opens" />
+        <Stat label="Link Clicks" value={clicks} hint="Actions taken" />
+        <Stat label="Click Rate" value={ctr} suffix="%" hint="Clicks per scan" />
+        <Stat label="Active Links" value={activeLinks} hint={`${site.links.length} total`} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-semibold tracking-tight">Scan Trend</p>
+              <p className="mt-0.5 text-xs text-neutral-500">Daily scans over the last 12 days</p>
+            </div>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${weekChange >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
+              {weekChange >= 0 ? "↑" : "↓"} {Math.abs(weekChange)}% this week
+            </span>
+          </div>
+          {scans || daily.length ? (
+            <>
+              <AreaChart values={daily} />
+              <div className="mt-2 flex justify-between text-[0.65rem] text-neutral-400">
+                <span>12 days ago</span><span>Today</span>
+              </div>
+            </>
+          ) : (
+            <EmptyState text="No scans yet. Share or print your QR code to start collecting analytics." />
+          )}
+        </Card>
+
+        <Card>
+          <p className="text-sm font-semibold tracking-tight">Insights</p>
+          <div className="mt-4 space-y-3">
+            <InsightRow icon={BarChart3} label="Best performing day" value={bestDay} sub={bestDayIndex >= 0 ? `${Math.max(...daily)} scans` : "No data yet"} />
+            <InsightRow icon={LinkIcon} label="Top link" value={topLink ? topLink.label : "—"} sub={topLink ? `${topLink.clicks || 0} clicks` : "No data yet"} />
+            <InsightRow icon={QrCode} label="Last 7 days" value={weekScans.toLocaleString()} sub={weekChange >= 0 ? "Trending up" : "Trending down"} />
+          </div>
+        </Card>
+      </div>
+
+      <Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold tracking-tight">Link Performance</p>
+            <p className="mt-0.5 text-xs text-neutral-500">Clicks per link, ranked</p>
+          </div>
+          <button onClick={() => {}} type="button" className="hidden" />
+        </div>
+        <div className="mt-4 space-y-3">
+          {sortedLinks.map((link) => (
+            <div key={link.id}>
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2 text-neutral-700">
+                  <span className={`h-1.5 w-1.5 rounded-full ${link.enabled ? "bg-emerald-500" : "bg-neutral-300"}`} />
+                  {link.label}
+                  {!link.enabled ? <span className="text-[0.65rem] text-neutral-400">(off)</span> : null}
+                </span>
+                <span className="text-xs font-medium text-neutral-500">{link.clicks || 0} clicks</span>
+              </div>
+              <div className="mt-1.5 h-1.5 rounded-full bg-neutral-100">
+                <div className="h-full rounded-full bg-neutral-900 transition-all" style={{ width: `${Math.round(((link.clicks || 0) / maxClicks) * 100)}%` }} />
+              </div>
+            </div>
+          ))}
+          {sortedLinks.length === 0 ? <EmptyState text="Add links to see performance." /> : null}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function InsightRow({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-neutral-100 p-3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-600">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-xs text-neutral-500">{label}</p>
+        <p className="truncate text-sm font-semibold text-neutral-900">{value} <span className="ml-1 text-xs font-normal text-neutral-400">{sub}</span></p>
+      </div>
+    </div>
+  );
+}
+
+function AreaChart({ values }: { values: number[] }) {
+  const data = values.length ? values : [0];
+  const max = Math.max(...data, 1);
+  const w = 100;
+  const h = 64;
+  const points = data.map((v, i) => `${(i / (data.length - 1 || 1)) * w},${h - (v / max) * (h - 6) - 2}`);
+  const line = points.join(" ");
+  const area = `0,${h} ${line} ${w},${h}`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="mt-4 h-44 w-full">
+      <polygon points={area} fill="#171717" opacity="0.06" />
+      <polyline points={line} fill="none" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {data.map((v, i) => (
+        <circle key={i} cx={(i / (data.length - 1 || 1)) * w} cy={h - (v / max) * (h - 6) - 2} r="1.2" fill="#171717" />
+      ))}
+    </svg>
+  );
 }
 
 function SettingsPanel({ site, setSite, persist, logout }: any) {
@@ -516,7 +648,7 @@ function ActionTile({ icon: Icon, label, dark }: { icon: React.ElementType; labe
 function Card({ children }: { children: React.ReactNode }) { return <section className="rounded-xl border border-neutral-200 bg-white p-5">{children}</section>; }
 function LogoCircle({ src, name, large }: { src?: string; name: string; large?: boolean }) { return <div className={`${large?"mx-auto h-16 w-16":"h-14 w-14"} shrink-0 overflow-hidden rounded-full bg-neutral-100 text-neutral-700 grid place-items-center text-sm font-semibold ring-1 ring-neutral-200`}>{src ? <img src={src} alt="" className="h-full w-full object-cover" /> : name.slice(0,2).toUpperCase()}</div>; }
 function MiniChart({ values, tall }: { values: number[]; tall?: boolean }) { const max = Math.max(...values, 1); const points = values.map((v,i)=>`${(i/(values.length-1 || 1))*100},${60-(v/max)*50}`).join(" "); return <svg viewBox="0 0 100 64" preserveAspectRatio="none" className={`mt-3 w-full ${tall?"h-48":"h-12"}`}><polyline points={points} fill="none" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
-function Stat({ label, value }: { label: string; value: number }) { return <Card><p className="text-xs font-medium text-neutral-500">{label}</p><strong className="mt-1 block text-2xl font-semibold tracking-tight">{value.toLocaleString()}</strong></Card>; }
+function Stat({ label, value, suffix, hint }: { label: string; value: number; suffix?: string; hint?: string }) { return <Card><p className="text-xs font-medium text-neutral-500">{label}</p><strong className="mt-1 block text-2xl font-semibold tracking-tight">{value.toLocaleString()}{suffix}</strong>{hint ? <p className="mt-0.5 text-[0.65rem] text-neutral-400">{hint}</p> : null}</Card>; }
 function EmptyState({ text }: { text: string }) { return <div className="mt-4 rounded-lg border border-dashed border-neutral-200 p-8 text-center text-sm text-neutral-500">{text}</div>; }
 function IconButton({ icon: Icon, label, onClick }: any) { return <button onClick={onClick} className="grid h-8 w-8 place-items-center rounded-md text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-700" type="button" aria-label={label}><Icon className="h-4 w-4" /></button>; }
 function move<T>(items: T[], from: number, to: number) { const copy = [...items]; const [item] = copy.splice(from,1); copy.splice(to,0,item); return copy; }

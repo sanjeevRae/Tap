@@ -7,8 +7,6 @@ import {
   MapPin,
   Star,
   Mail,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { useInView } from "./use-in-view";
 
@@ -45,18 +43,6 @@ const products = [
 
 export function Ecosystem() {
   const { ref, inView } = useInView<HTMLDivElement>();
-  const scrollerRef = React.useRef<HTMLDivElement>(null);
-
-  const scroll = (dir: number) => {
-    const el = scrollerRef.current;
-
-    if (!el) return;
-
-    el.scrollBy({
-      left: dir * 320,
-      behavior: "smooth",
-    });
-  };
 
   return (
     <section
@@ -82,10 +68,7 @@ export function Ecosystem() {
 
         {/* Feature Cards */}
         <div className="relative mt-12">
-          <div
-            ref={scrollerRef}
-            className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4"
-          >
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
             {products.map((p, i) => (
               <motion.article
                 key={p.name}
@@ -95,7 +78,7 @@ export function Ecosystem() {
                   duration: 0.5,
                   delay: i * 0.08,
                 }}
-                className="group relative w-[280px] shrink-0 snap-start overflow-hidden rounded-lg border border-[#e3def4] bg-card p-6 shadow-card transition-all hover:-translate-y-1 hover:shadow-soft"
+                className="group relative overflow-hidden rounded-lg border border-[#e3def4] bg-card p-4 shadow-card transition-all hover:-translate-y-1 hover:shadow-soft sm:p-6"
               >
                 {/* Background Glow */}
                 <div
@@ -107,25 +90,25 @@ export function Ecosystem() {
 
                 {/* Icon */}
                 <span
-                  className="relative flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-brand"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-brand sm:h-12 sm:w-12 sm:rounded-2xl"
                   style={{
                     background: p.color,
                   }}
                 >
                   <p.icon
-                    className="h-6 w-6"
+                    className="h-5 w-5 sm:h-6 sm:w-6"
                     strokeWidth={1.8}
                   />
                 </span>
 
                 {/* Title */}
-                <h3 className="mt-5 text-lg font-semibold text-ink">
+                <h3 className="mt-4 text-sm font-semibold text-ink sm:text-lg">
                   {p.name}
                 </h3>
 
                 {/* Tagline */}
                 <p
-                  className="mt-1 text-sm font-medium"
+                  className="mt-1 text-xs font-medium sm:text-sm"
                   style={{
                     color: p.color,
                   }}
@@ -134,14 +117,14 @@ export function Ecosystem() {
                 </p>
 
                 {/* Description */}
-                <p className="mt-3 text-sm leading-6 text-ink-soft">
+                <p className="mt-2 hidden text-sm leading-6 text-ink-soft sm:block">
                   {p.desc}
                 </p>
 
                 {/* Link */}
                 <a
                   href="#"
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-ink transition-all hover:gap-2"
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-ink transition-all hover:gap-2 sm:mt-5 sm:text-sm"
                 >
                   Learn more
                   <span aria-hidden="true">→</span>

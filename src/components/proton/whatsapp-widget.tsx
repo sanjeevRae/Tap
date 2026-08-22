@@ -6,6 +6,18 @@ import { usePathname } from "next/navigation";
 export function WhatsappWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const update = () =>
+      setTime(
+        new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+      );
+    update();
+    const id = setInterval(update, 30000);
+    return () => clearInterval(id);
+  }, []);
+
   const shouldHide =
     pathname === "/dashboard" ||
     pathname.startsWith("/dashboard/") ||
@@ -58,7 +70,7 @@ export function WhatsappWidget() {
             <p style={{ margin: 0 }}>
               Thank you for contacting us. How can we help you today?
             </p>
-            <span id="wa-time">11:10 PM</span>
+            <span id="wa-time">{time}</span>
           </div>
         </div>
         <div id="wa-footer">
