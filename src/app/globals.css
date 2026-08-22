@@ -55,8 +55,7 @@
 
 :root {
   --radius: 0.875rem;
-  /* Proton-inspired brand */
-  --brand: #342b85;
+  --brand: #291ba9;
   --brand-foreground: #ffffff;
   --brand-soft: #f1eeff;
   --brand-soft-2: #e7e1ff;
@@ -278,4 +277,171 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
     animation: shimmer 2.4s infinite;
   }
+}
+
+/* ===== WhatsApp Widget ===== */
+#wa-launcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#wa-launcher:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#wa-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid #fff;
+}
+
+.wa-online-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  margin-right: 4px;
+}
+
+#wa-chat {
+  position: fixed;
+  bottom: 92px;
+  right: 24px;
+  z-index: 9999;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  font-family: inherit;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.96);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+#wa-chat.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+#wa-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #075e54;
+  color: #fff;
+}
+#wa-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+#wa-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+#wa-status {
+  font-size: 12px;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+}
+#wa-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+#wa-body {
+  padding: 16px;
+  background: #ece5dd;
+}
+#wa-bubble {
+  position: relative;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px 18px;
+  font-size: 13.5px;
+  color: #333;
+  max-width: 90%;
+}
+#wa-time {
+  position: absolute;
+  right: 10px;
+  bottom: 4px;
+  font-size: 10px;
+  color: #999;
+}
+
+#wa-footer {
+  padding: 12px;
+  background: #f5f5f5;
+}
+#wa-cta {
+  display: block;
+  text-align: center;
+  background: #25d366;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 11px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+#wa-cta:hover {
+  background: #1ebe57;
+}
+
+/* ===== Save Toast ===== */
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.toast-slide-in {
+  animation: toast-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.toast-progress {
+  width: 100%;
+  transform-origin: left;
+  animation: toast-progress 2.6s linear forwards;
+}
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
 }

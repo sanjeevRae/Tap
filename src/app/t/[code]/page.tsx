@@ -13,7 +13,7 @@ const socialIcons: Record<string, string> = {
   youtube: `${cdn}/youtube/FF0000`,
   website: `${cdn}/googlechrome/4285F4`,
   whatsapp: `${cdn}/whatsapp/25D366`,
-  linkedin: `${cdn}/linkedin/0A66C2`,
+  linkedin: "https://s.magecdn.com/social/tc-linkedin.svg",
   snapchat: `${cdn}/snapchat/FFFC00`,
   viber: `${cdn}/viber/7360F2`,
   x: `${cdn}/x/000000`,
@@ -99,7 +99,7 @@ export default function PublicQrPage() {
               <p className="mt-1.5 truncate text-[#6e6973]">{site.business.address || "Add address"}</p>
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-4 gap-4">
+          <div className="mt-8 grid grid-cols-4 gap-2.5">
             {site.settings.showPhone && site.business.phone ? <ActionTile dark icon={Phone} label="Call" onClick={() => location.href = `tel:${site.business.phone}`} /> : null}
             {whatsapp ? <ActionTile dark icon={MessageSquare} label="WhatsApp" onClick={() => openLink(whatsapp.id, whatsapp.url)} /> : null}
             {routeUrl ? <ActionTile icon={Navigation} label="Directions" onClick={() => openLink("directions", routeUrl)} /> : null}
@@ -126,5 +126,14 @@ export default function PublicQrPage() {
 }
 
 function ActionTile({ icon: Icon, label, dark, onClick }: { icon: React.ElementType; label: string; dark?: boolean; onClick: () => void }) {
-  return <button onClick={onClick} className={`grid aspect-square min-w-0 place-items-center rounded-xl text-xs font-semibold shadow-sm ${dark ? "bg-[#5a2b12] text-white" : "bg-[#f0ebe4] text-[#171421]"}`} type="button"><Icon className="h-6 w-6" /><span className="max-w-full truncate px-1">{label}</span></button>;
+  return (
+    <button
+      onClick={onClick}
+      className={`group flex min-w-0 flex-col items-center gap-2 rounded-2xl border border-[#eee6dc] bg-white py-3.5 text-[#171421] transition hover:border-[#5a2b12] hover:bg-[#5a2b12] hover:text-white active:scale-95`}
+      type="button"
+    >
+      <Icon className="h-5 w-5" />
+      <span className="max-w-full truncate px-1 text-[0.7rem] font-semibold">{label}</span>
+    </button>
+  );
 }
