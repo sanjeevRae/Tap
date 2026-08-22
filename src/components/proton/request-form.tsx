@@ -135,7 +135,7 @@ export function RequestForm() {
         >
           <div className="grid gap-5 md:grid-cols-2">
             <label className="space-y-2 text-xs font-semibold text-[#202124]">
-              <span>Name & Company</span>
+              <span>Name/Company</span>
               <input
                 required
                 value={form.name}

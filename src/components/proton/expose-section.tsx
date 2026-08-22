@@ -390,8 +390,8 @@ function CardVisual({
             <motion.circle
               cx="195"
               cy="5"
-              r="4"
               fill="#1d7fd1"
+              initial={{ r: 3 }}
               animate={{
                 r: [3, 5, 3],
               }}
