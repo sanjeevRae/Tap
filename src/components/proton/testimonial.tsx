@@ -27,7 +27,7 @@ const testimonials: Testimonial[] = [
     date: "June 13, 2026",
     rating: 5,
     title: "Best decision for my cafe",
-    text: "Since adding the TapChitra stand at our counter, customers check our menu, reviews and socials instantly. No more printing new menus.",
+    text: "Since adding the Chitra Tap at our counter, customers check our menu, reviews and socials instantly. No more printing new menus.",
   },
   {
     name: "Anish Gurung",

@@ -1,5 +1,6 @@
 "use client";
 
+import "@mdxeditor/editor/style.css";
 import * as React from "react";
 import {
   CheckCircle2,
@@ -339,28 +340,27 @@ const mdxModules = () => import("@mdxeditor/editor");
 function RichText({ value, onChange, compact }: { value: string; onChange: (html: string) => void; compact?: boolean }) {
   const [Editor, setEditor] = React.useState<any>(null);
   const [plugins, setPlugins] = React.useState<any>(null);
+  const [modules, setModules] = React.useState<any>(null);
 
   React.useEffect(() => {
     let mounted = true;
     mdxModules().then((m) => {
       if (!mounted) return;
       setEditor(() => m.MDXEditor);
+      setModules(m);
       setPlugins([
-        m.undoRedoPlugin,
         m.headingsPlugin,
-        m.boldItalicUnderlineTogglesPlugin,
         m.listsPlugin,
         m.linkPlugin,
         m.linkDialogPlugin,
         m.tablePlugin,
         m.thematicBreakPlugin,
-        m.toolbarPlugin,
-      ]);
+      ].filter(Boolean));
     });
     return () => { mounted = false; };
   }, []);
 
-  if (!Editor || !plugins) {
+  if (!Editor || !plugins || !modules) {
     return <textarea value={value} onChange={(e) => onChange(e.target.value)}
       className={`mt-2 w-full resize-y rounded-md border border-neutral-200 p-3 text-sm outline-none focus:border-neutral-400 ${compact ? "min-h-[80px]" : "min-h-[140px]"}`} />;
   }
@@ -373,12 +373,12 @@ function RichText({ value, onChange, compact }: { value: string; onChange: (html
 
   return (
     <div className={`mt-2 overflow-hidden rounded-md border border-neutral-200 ${compact ? "" : ""}`}>
-      <LazyMdx editor={Editor} plugins={plugins} value={value} onChange={onChange} htmlToMd={htmlToMd} compact={compact} />
+      <LazyMdx editor={Editor} modules={modules} plugins={plugins} value={value} onChange={onChange} htmlToMd={htmlToMd} compact={compact} />
     </div>
   );
 }
 
-function LazyMdx({ editor: Editor, plugins, value, onChange, htmlToMd, compact }: any) {
+function LazyMdx({ editor: Editor, modules, plugins, value, onChange, htmlToMd, compact }: any) {
   const [md, setMd] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -395,11 +395,36 @@ function LazyMdx({ editor: Editor, plugins, value, onChange, htmlToMd, compact }
     onChange(html);
   }
 
+  const {
+    UndoRedo,
+    BoldItalicUnderlineToggles,
+    BlockTypeSelect,
+    ListsToggle,
+    CreateLink,
+    InsertThematicBreak,
+    InsertTable,
+    Separator,
+    toolbarPlugin,
+  } = modules;
+
+  const toolbarContents = () => (
+    <>
+      <UndoRedo />
+      <Separator />
+      <BlockTypeSelect />
+      <BoldItalicUnderlineToggles />
+      <ListsToggle />
+      <CreateLink />
+      <InsertThematicBreak />
+      <InsertTable />
+    </>
+  );
+
   return (
     <Editor
       markdown={md}
       onChange={handle}
-      plugins={plugins}
+      plugins={[...plugins, toolbarPlugin({ toolbarContents })]}
       className={compact ? "min-h-[80px]" : "min-h-[140px]"}
       contentEditableClassName="policy-editor prose-sm"
     />
