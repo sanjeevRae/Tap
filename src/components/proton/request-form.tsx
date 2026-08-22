@@ -41,10 +41,14 @@ export function RequestForm() {
     };
 
     document.body.style.overflow = "hidden";
+    // Radix Sheet/Dialog can leave pointer-events disabled on body when the
+    // form is opened from the mobile menu — restore them so the form is clickable.
+    document.body.style.pointerEvents = "auto";
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = "";
+      document.body.style.pointerEvents = "";
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);

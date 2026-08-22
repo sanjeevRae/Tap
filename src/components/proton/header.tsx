@@ -28,6 +28,8 @@ type MegaItem = {
   href?: string;
   desc?: string;
   badge?: string;
+  action?: "contact" | "external";
+  externalUrl?: string;
 };
 
 type MegaColumn = {
@@ -51,14 +53,17 @@ const NAV: NavItem[] = [
           {
             label: "What is ChitraTap?",
             desc: "Discover how NFC and QR make your business easier to find",
+            href: "#hero",
           },
           {
             label: "Why ChitraTap?",
             desc: "Connect customers to your business with one simple tap",
+            href: "#why",
           },
           {
             label: "All features",
             desc: "Explore everything included with ChitraTap",
+            href: "#compare",
           },
         ],
       },
@@ -85,14 +90,17 @@ const NAV: NavItem[] = [
           {
             label: "Google Maps",
             desc: "Help customers find your business easily",
+            href: "#ecosystem",
           },
           {
             label: "Google reviews",
             desc: "Show your business rating and reviews",
+            href: "#ecosystem",
           },
           {
             label: "Social media",
             desc: "Connect customers to your online presence",
+            href: "#ecosystem",
           },
         ],
       },
@@ -108,14 +116,17 @@ const NAV: NavItem[] = [
           {
             label: "Business information",
             desc: "Display your essential business details",
+            href: "#ecosystem",
           },
           {
             label: "Contact details",
             desc: "Let customers quickly call or contact you",
+            href: "#ecosystem",
           },
           {
             label: "Opening hours",
             desc: "Show customers when you're open",
+            href: "#ecosystem",
           },
         ],
       },
@@ -125,14 +136,17 @@ const NAV: NavItem[] = [
           {
             label: "Social media",
             desc: "Connect Facebook, Instagram, TikTok and more",
+            href: "#ecosystem",
           },
           {
             label: "Google Maps",
             desc: "Show your exact business location",
+            href: "#ecosystem",
           },
           {
             label: "Google reviews",
             desc: "Highlight your existing business reputation",
+            href: "#ecosystem",
           },
         ],
       },
@@ -142,14 +156,17 @@ const NAV: NavItem[] = [
           {
             label: "NFC tap",
             desc: "Instant access with a simple tap",
+            href: "#expose",
           },
           {
             label: "QR code",
             desc: "Scan and open your profile instantly",
+            href: "#expose",
           },
           {
             label: "Customer insights",
             desc: "Understand how customers interact with your profile",
+            href: "#expose",
           },
         ],
       },
@@ -213,6 +230,7 @@ const NAV: NavItem[] = [
           {
             label: "Contact us",
             desc: "Talk to the ChitraTech team",
+            action: "contact",
           },
         ],
       },
@@ -222,16 +240,30 @@ const NAV: NavItem[] = [
           {
             label: "About ChitraTech",
             desc: "Learn more about the company behind ChitraTap",
+            action: "external",
+            externalUrl: "https://chitratech.com.np/",
           },
           {
             label: "ChitraTech website",
             desc: "Explore our other technology solutions",
+            action: "external",
+            externalUrl: "https://chitratech.com.np/",
           },
         ],
       },
     ],
   },
 ];
+
+function handleItemClick(it: MegaItem, event: React.MouseEvent) {
+  if (it.action === "contact") {
+    event.preventDefault();
+    openRequestForm();
+  } else if (it.action === "external" && it.externalUrl) {
+    event.preventDefault();
+    window.open(it.externalUrl, "_blank", "noopener");
+  }
+}
 
 function MegaPanel({ item }: { item: NavItem }) {
   if (!item.columns) return null;
@@ -261,6 +293,7 @@ function MegaPanel({ item }: { item: NavItem }) {
                   <li key={it.label}>
                     <a
                       href={it.href || "#"}
+                      onClick={(e) => handleItemClick(it, e)}
                       className="group/item flex flex-col rounded-lg px-2 py-2 transition-colors hover:bg-accent"
                     >
                       <span className="flex items-center gap-1 text-sm font-medium text-[#2c1a7a]">
@@ -435,6 +468,7 @@ export function Header() {
                                         <li key={it.label}>
                                           <a
                                             href={it.href || "#"}
+                                            onClick={(e) => handleItemClick(it, e)}
                                             className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-accent"
                                           >
                                             <span className="font-medium text-[#2c1a7a]">
