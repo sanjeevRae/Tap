@@ -79,8 +79,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error("Contact API crashed:", error);
+  } catch {
     return NextResponse.json(
       { error: "Unable to send request." },
       { status: 500 }
