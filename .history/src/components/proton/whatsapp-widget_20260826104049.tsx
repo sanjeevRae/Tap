@@ -52,7 +52,6 @@ export function WhatsappWidget() {
     document.body.appendChild(script);
 
     return () => {
-      window.fetch = originalFetch;
       observer.disconnect();
       script.remove();
       // Clean up any DOM the widget injected
