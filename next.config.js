@@ -20,6 +20,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  async rewrites() {
+    return [
+      {
+        source: "/ai-widget.js",
+        destination:
+          "https://chitra-ai-backend-p6ex.onrender.com/widget.js?org=e37e6fef-c42b-4214-b4b7-c0910f7157da",
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
