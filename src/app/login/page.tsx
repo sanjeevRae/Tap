@@ -111,7 +111,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await sendPasswordResetEmail(auth, email.trim());
+      await sendPasswordResetEmail(auth, email.trim(), {
+        url: `${window.location.origin}/auth-action`,
+        handleCodeInApp: false,
+      });
       setMessage("Password reset email sent.");
     } catch {
       setError("Unable to send password reset email.");

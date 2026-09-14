@@ -193,7 +193,7 @@ function siteFromDoc(id: string, data: Record<string, any>): TapSite {
     },
     settings: {
       theme: data.settings?.theme || "light",
-      accentColor: data.settings?.accentColor || "#6544e8",
+      accentColor: data.settings?.accentColor || "#5a2b12",
       showAddress: data.settings?.showAddress ?? true,
       showPhone: data.settings?.showPhone ?? true,
       notifications: data.settings?.notifications ?? true,
@@ -244,7 +244,7 @@ export async function getOrCreateSite(userId: string, email: string, name: strin
     },
     settings: {
       theme: "light",
-      accentColor: "#6544e8",
+      accentColor: "#5a2b12",
       showAddress: true,
       showPhone: true,
       notifications: true,
