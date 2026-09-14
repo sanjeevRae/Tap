@@ -115,9 +115,23 @@ export default function LoginPage() {
         url: `${window.location.origin}/auth-action`,
         handleCodeInApp: false,
       });
-      setMessage("Password reset email sent.");
-    } catch {
-      setError("Unable to send password reset email.");
+      setMessage("Password reset email sent. Check your inbox and spam folder.");
+    } catch (error) {
+      console.error("sendPasswordResetEmail failed:", error);
+      const code = (error as { code?: string })?.code || "";
+      if (code === "auth/user-not-found") {
+        setError("No account exists with this email.");
+      } else if (code === "auth/invalid-email") {
+        setError("This email address is not valid.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many reset requests. Please try again later.");
+      } else if (code === "auth/operation-not-allowed") {
+        setError("Email/password sign-in is not enabled for this project.");
+      } else if (code === "auth/network-request-failed") {
+        setError("Network error. Check your internet connection and try again.");
+      } else {
+        setError(`Could not send reset email (${code || "unknown error"}).`);
+      }
     } finally {
       setLoading(false);
     }
