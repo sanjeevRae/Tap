@@ -358,6 +358,18 @@ function DashboardHome({ site, setSite, completion, publicUrl, go, persist }: an
 }
 
 function ProfileEditor({ site, setSite, persist }: any) {
+  const businessFieldLabels: Record<string, string> = {
+    name: "Name",
+    description: "Description",
+    phone: "Phone",
+    email: "Email",
+    address: "Address",
+    openingHours: "Opening Hours",
+    googleReviewUrl: "Google Review URL",
+    locationLabel: "Location Label",
+    googleRating: "Google Rating",
+    googleReviewCount: "Google Review Count",
+  };
   function update(field: string, value: string | string[]) { setSite({ ...site, business: { ...site.business, [field]: value } }); }
   return (
     <Card>
@@ -366,9 +378,9 @@ function ProfileEditor({ site, setSite, persist }: any) {
         <button onClick={() => persist()} disabled={false} className="rounded-md bg-neutral-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:opacity-50" type="button">Save</button>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {["name","description","phone","email","address","openingHours","googleReviewUrl","locationLabel","googleRating","googleReviewCount"].map((field)=><label key={field} className="text-xs font-medium text-neutral-600">{field.replace(/([A-Z])/g," $1")}<input value={site.business[field] || ""} onChange={(e)=>update(field,e.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100" placeholder={field === "googleReviewUrl" ? "Paste your Google review link" : undefined} /></label>)}
+        {["name","description","phone","email","address","openingHours","googleReviewUrl","locationLabel","googleRating","googleReviewCount"].map((field)=><label key={field} className="text-xs font-medium text-neutral-600">{businessFieldLabels[field] || field}<input value={site.business[field] || ""} onChange={(e)=>update(field,e.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100" placeholder={field === "googleReviewUrl" ? "Paste your Google review link" : undefined} /></label>)}
       </div>
-      <label className="mt-4 block text-xs font-medium text-neutral-600">Category tags<input value={(site.business.categoryTags || []).join(", ")} onChange={(e)=>update("categoryTags", e.target.value.split(",").map((item)=>item.trim()).filter(Boolean))} className="mt-1.5 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100" placeholder="Cafe, Restaurant, Coffee Shop" /></label>
+      <label className="mt-4 block text-xs font-medium text-neutral-600">Category Tags<input value={(site.business.categoryTags || []).join(", ")} onChange={(e)=>update("categoryTags", e.target.value.split(",").map((item)=>item.trim()).filter(Boolean))} className="mt-1.5 h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100" placeholder="Cafe, Restaurant, Coffee Shop" /></label>
       <div className="mt-5 rounded-lg border border-neutral-200 p-4">
         <p className="text-sm font-medium">Map Location</p>
         <p className="mt-0.5 text-xs text-neutral-500">The public map is generated from the business address.</p>
@@ -390,7 +402,6 @@ function LinksPanel({ site, setSite, persist }: any) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold tracking-tight">Social Media</p>
-          <p className="mt-0.5 text-xs text-neutral-500">Add the channels customers should open from your page.</p>
         </div>
         <select onChange={(event)=>add(socialPresets.find((item)=>item.label===event.target.value) || socialPresets[0])} defaultValue="" className="h-9 rounded-md border border-neutral-200 bg-white px-2.5 text-sm text-neutral-700 outline-none">
           <option value="" disabled>Add link</option>
@@ -433,7 +444,6 @@ function QrPanel({ site, setSite, publicUrl }: any) {
   return (
     <Card>
       <p className="text-sm font-semibold tracking-tight">QR Code</p>
-      <p className="mt-0.5 text-xs text-neutral-500">Stable resolver URL. Do not replace this with a custom domain URL.</p>
       <div className="mt-5 grid gap-6 md:grid-cols-[16rem_1fr]">
         <div className="grid place-items-center rounded-lg border border-neutral-200 bg-white p-5"><img src={qrImage} alt="QR code" className="h-56 w-56" /></div>
         <div className="space-y-2.5">
@@ -489,12 +499,7 @@ function AnalyticsPanel({ site }: { site: TapSite }) {
             </span>
           </div>
           {scans || daily.length ? (
-            <>
-              <AreaChart values={daily} />
-              <div className="mt-2 flex justify-between text-[0.65rem] text-neutral-400">
-                <span>12 days ago</span><span>Today</span>
-              </div>
-            </>
+            <ScanTrendChart values={daily} />
           ) : (
             <EmptyState text="No scans yet. Share or print your QR code to start collecting analytics." />
           )}
@@ -555,22 +560,89 @@ function InsightRow({ icon: Icon, label, value, sub }: { icon: React.ElementType
   );
 }
 
-function AreaChart({ values }: { values: number[] }) {
+function ScanTrendChart({ values }: { values: number[] }) {
   const data = values.length ? values : [0];
   const max = Math.max(...data, 1);
-  const w = 100;
-  const h = 64;
-  const points = data.map((v, i) => `${(i / (data.length - 1 || 1)) * w},${h - (v / max) * (h - 6) - 2}`);
-  const line = points.join(" ");
-  const area = `0,${h} ${line} ${w},${h}`;
+  const min = Math.min(...data);
+  const avg = data.reduce((a, b) => a + b, 0) / data.length;
+  const today = new Date();
+  const dayLetters = ["S", "M", "T", "W", "T", "F", "S"];
+  const dateFor = (i: number) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (data.length - 1 - i));
+    return d;
+  };
+
+  // Y-scale with headroom so a flat line (all equal values) sits mid-chart, not at the edge
+  const PAD_TOP = 14;
+  const PAD_BOTTOM = 10;
+  const span = Math.max(max - min, 1);
+  const yFor = (v: number) => PAD_TOP + (1 - (v - min) / span) * (100 - PAD_TOP - PAD_BOTTOM);
+  const xFor = (i: number) => (i / (data.length - 1 || 1)) * 100;
+  const pts = data.map((v, i) => [xFor(i), yFor(v)] as const);
+
+  // Smooth Catmull-Rom -> cubic bezier path (rounded, no jagged corners)
+  let linePath = `M ${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i - 1, 0)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(i + 2, pts.length - 1)];
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    linePath += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2[0]},${p2[1]}`;
+  }
+  const areaPath = `${linePath} L 100,100 L 0,100 Z`;
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="mt-4 h-44 w-full">
-      <polygon points={area} fill="#171717" opacity="0.06" />
-      <polyline points={line} fill="none" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {data.map((v, i) => (
-        <circle key={i} cx={(i / (data.length - 1 || 1)) * w} cy={h - (v / max) * (h - 6) - 2} r="1.2" fill="#171717" />
-      ))}
-    </svg>
+    <div className="mt-5">
+      <div className="relative h-44">
+        {/* horizontal gridlines */}
+        {[25, 50, 75].map((g) => (
+          <div key={g} className="pointer-events-none absolute inset-x-0 border-t border-neutral-100" style={{ bottom: `${g}%` }} />
+        ))}
+        {/* dashed average line */}
+        <div className="pointer-events-none absolute inset-x-0 z-[5] border-t border-dashed border-neutral-300" style={{ bottom: `${yFor(avg)}%` }}>
+          <span className="absolute -top-4 right-0 rounded bg-white/80 px-1 text-[0.6rem] font-medium text-neutral-400">avg {avg % 1 ? avg.toFixed(1) : avg}</span>
+        </div>
+        {/* smooth line + gradient area */}
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+          <defs>
+            <linearGradient id="scanTrendFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#171717" stopOpacity="0.16" />
+              <stop offset="100%" stopColor="#171717" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={areaPath} fill="url(#scanTrendFill)" />
+          <path d={linePath} fill="none" stroke="#171717" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+        {/* dots + hover zones */}
+        {pts.map(([x, y], i) => {
+          const v = data[i];
+          const d = dateFor(i);
+          const isPeak = v === max && max > 0;
+          const isLast = i === data.length - 1;
+          return (
+            <div key={i} className="group absolute inset-y-0 z-10" style={{ left: `${x}%`, width: `${100 / data.length}%`, transform: "translateX(-50%)" }}>
+              <div className="pointer-events-none absolute -top-1 left-1/2 z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-neutral-900 px-2 py-1 text-[0.65rem] font-medium text-white opacity-0 shadow-lg transition group-hover:opacity-100" style={{ bottom: `calc(${100 - y}% + 10px)` }}>
+                {v} scan{v === 1 ? "" : "s"} · {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              </div>
+              <span
+                className={`absolute left-1/2 block h-2.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full ring-2 ring-white transition group-hover:scale-125 ${isPeak || isLast ? "bg-neutral-900" : "bg-neutral-400 group-hover:bg-neutral-900"}`}
+                style={{ bottom: `${y}%` }}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex">
+        {data.map((_, i) => (
+          <span key={i} className="flex-1 text-center text-[0.6rem] font-medium text-neutral-400">{dayLetters[dateFor(i).getDay()]}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -581,6 +653,7 @@ function SettingsPanel({ site, setSite, persist, logout }: any) {
       <p className="text-sm font-semibold tracking-tight">Settings</p>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <label className="text-xs font-medium text-neutral-600">Public page color<div className="mt-2 flex items-center gap-3"><input type="color" value={site.settings.accentColor} onChange={(e)=>updateSetting("accentColor",e.target.value)} className="h-10 w-14 cursor-pointer rounded-md border border-neutral-200 bg-white p-1" /><span className="text-sm text-neutral-500">{site.settings.accentColor}</span></div></label>
+        <label className="text-xs font-medium text-neutral-600">Theme<div className="mt-2 flex gap-2">{(["light","dark"] as const).map((t)=><button key={t} type="button" onClick={()=>updateSetting("theme",t)} className={`rounded-md border px-4 py-2 text-sm capitalize transition ${site.settings.theme===t?"border-neutral-900 bg-neutral-900 text-white":"border-neutral-200 text-neutral-700 hover:bg-neutral-50"}`}>{t}</button>)}</div></label>
         {["showAddress","showPhone","notifications"].map(key=><label key={key} className="flex items-center justify-between rounded-lg border border-neutral-200 px-4 py-3 text-sm text-neutral-700 capitalize">{key.replace(/([A-Z])/g," $1")}<input type="checkbox" checked={site.settings[key]} onChange={(e)=>updateSetting(key,e.target.checked)} className="h-4 w-4 accent-neutral-900" /></label>)}
       </div>
       <div className="mt-6 flex flex-wrap gap-2">
@@ -600,23 +673,25 @@ function AccountDialog({ profile, site, saving, onClose, onSave }: any) {
 function PagePreview({ site, publicUrl }: { site: TapSite; publicUrl: string }) { return <Card><div className="flex justify-between"><div><p className="text-sm font-semibold">Your Page Preview</p><p className="text-xs text-[#767184]">See how your customers see your full public page</p></div><button onClick={()=>window.open(publicUrl,"_blank")} type="button" aria-label="Open preview"><Eye className="h-4 w-4" /></button></div><div className="mt-4 overflow-hidden rounded-lg border border-black/10"><PublicMock site={site} /></div></Card>; }
 function PublicMock({ site }: { site: TapSite }) {
   const enabledLinks = site.links.filter((link) => link.enabled && link.url);
+  const dark = site.settings.theme === "dark";
+  const accent = !site.settings.accentColor || site.settings.accentColor === "#6544e8" ? "#5a2b12" : site.settings.accentColor;
   const embedUrl = mapEmbedUrl(site);
   const routeUrl = directionsUrl(site);
   const whatsapp = enabledLinks.find((link) => link.label.toLowerCase() === "whatsapp");
   const website = enabledLinks.find((link) => link.label.toLowerCase() === "website");
   return (
-    <div className="bg-[#fffaf4]">
-      <div className="relative h-48 bg-[#171421] bg-cover bg-center" style={{backgroundImage: site.business.coverImage ? `url(${site.business.coverImage})` : undefined}}>
+    <div className={dark ? "bg-[#171421] text-[#f2f1f5]" : "bg-white"}>
+      <div className={`relative h-48 ${dark ? "bg-[#221e2c]" : "bg-[#171421]"} bg-cover bg-center`} style={{backgroundImage: site.business.coverImage ? `url(${site.business.coverImage})` : undefined}}>
         <button className="absolute right-3 top-3 flex h-9 items-center gap-2 rounded-full border border-white/70 bg-black/25 px-3 text-xs font-semibold text-white" type="button"><ExternalLink className="h-4 w-4" />Share</button>
       </div>
-      <div className="rounded-t-[1.5rem] bg-[#fffaf4] px-4 pb-5 text-center">
+      <div className={`rounded-t-[1.5rem] px-4 pb-5 text-center ${dark ? "bg-[#171421]" : "bg-white"}`}>
         <div className="-mt-16">
-          <div className="mx-auto grid h-32 w-32 place-items-center overflow-hidden rounded-full border-[5px] border-white bg-[#5a2b12] text-xl font-semibold text-white shadow-lg">
+          <div className="mx-auto grid h-32 w-32 place-items-center overflow-hidden rounded-full border-[5px] border-white text-xl font-semibold text-white shadow-lg" style={{ backgroundColor: accent }}>
             {site.business.logo ? <img src={site.business.logo} alt="" className="h-full w-full object-cover" /> : null}
           </div>
         </div>
         <h3 className="mt-4 text-3xl font-bold tracking-tight">{site.business.name}</h3>
-        {site.business.description ? <p className="mt-2 text-sm leading-5 text-[#171421]">{site.business.description}</p> : null}
+        {site.business.description ? <p className={`mt-2 text-sm leading-5 ${dark ? "text-[#c9c6d1]" : "text-[#171421]"}`}>{site.business.description}</p> : null}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           {["Cafe", "Restaurant", "Coffee Shop"].map((chip) => <span key={chip} className="rounded-full bg-black/[0.05] px-4 py-2 text-xs">{chip}</span>)}
         </div>
