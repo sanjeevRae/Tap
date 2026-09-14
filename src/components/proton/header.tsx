@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Menu, ChevronDown, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { ProtonLogo } from "./logo";
 import { openRequestForm } from "./request-form";
 
@@ -73,14 +74,17 @@ const NAV: NavItem[] = [
           {
             label: "NFC & QR",
             desc: "Tap or scan to open your digital business profile",
+            href: "/how-it-works#nfc-qr",
           },
           {
             label: "Digital business profile",
             desc: "Show your business information in one place",
+            href: "/how-it-works#digital-profile",
           },
           {
             label: "Dashboard",
             desc: "Manage and update your information anytime",
+            href: "/how-it-works#dashboard",
           },
         ],
       },
@@ -182,14 +186,17 @@ const NAV: NavItem[] = [
           {
             label: "Restaurants & Cafes",
             desc: "Perfect for menus, locations and reviews",
+            href: "/business-types#restaurants-cafes",
           },
           {
             label: "Hotels & Hospitality",
             desc: "Connect guests with your digital information",
+            href: "/business-types#hotels-hospitality",
           },
           {
             label: "Retail & Shops",
             desc: "Make your business easier to discover",
+            href: "/business-types#retail-shops",
           },
         ],
       },
@@ -197,16 +204,24 @@ const NAV: NavItem[] = [
         heading: "Professional services",
         items: [
           {
+            label: "Professional services",
+            desc: "Present your services and credentials in one place",
+            href: "/business-types#professional-services",
+          },
+          {
             label: "Salons & Beauty",
             desc: "Show services, contact details and socials",
+            href: "/business-types#salons-beauty",
           },
           {
             label: "Offices & Companies",
             desc: "Create a professional digital presence",
+            href: "/business-types#offices-companies",
           },
           {
             label: "Freelancers",
             desc: "Share your professional information instantly",
+            href: "/business-types#freelancers",
           },
         ],
       },
@@ -222,6 +237,7 @@ const NAV: NavItem[] = [
           {
             label: "ChitraTap Support",
             desc: "Get help and find useful guides",
+            href: "mailto:info@chitratech.com.np",
           },
           {
             label: "Getting started",
@@ -255,17 +271,25 @@ const NAV: NavItem[] = [
   },
 ];
 
-function handleItemClick(it: MegaItem, event: React.MouseEvent) {
+function resolveHref(href?: string) {
+  return href && href.startsWith("#") ? `/${href}` : href;
+}
+
+function handleItemClick(it: MegaItem, event: React.MouseEvent, onNavigate?: () => void) {
   if (it.action === "contact") {
     event.preventDefault();
     openRequestForm();
+    onNavigate?.();
   } else if (it.action === "external" && it.externalUrl) {
     event.preventDefault();
     window.open(it.externalUrl, "_blank", "noopener");
+    onNavigate?.();
+  } else {
+    onNavigate?.();
   }
 }
 
-function MegaPanel({ item }: { item: NavItem }) {
+function MegaPanel({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   if (!item.columns) return null;
 
   return (
@@ -289,13 +313,10 @@ function MegaPanel({ item }: { item: NavItem }) {
               </p>
 
               <ul className="space-y-0.5">
-                {col.items.map((it) => (
-                  <li key={it.label}>
-                    <a
-                      href={it.href || "#"}
-                      onClick={(e) => handleItemClick(it, e)}
-                      className="group/item flex flex-col rounded-lg px-2 py-2 transition-colors hover:bg-accent"
-                    >
+                {col.items.map((it) => {
+                  const href = resolveHref(it.href);
+                  const content = (
+                    <>
                       <span className="flex items-center gap-1 text-sm font-medium text-[#2c1a7a]">
                         {it.label}
 
@@ -311,9 +332,24 @@ function MegaPanel({ item }: { item: NavItem }) {
                           {it.desc}
                         </span>
                       )}
-                    </a>
-                  </li>
-                ))}
+                    </>
+                  );
+                  const className =
+                    "group/item flex flex-col rounded-lg px-2 py-2 transition-colors hover:bg-accent";
+                  return (
+                    <li key={it.label}>
+                      {href?.startsWith("/") ? (
+                        <Link href={href} onClick={() => onNavigate?.()} className={className}>
+                          {content}
+                        </Link>
+                      ) : (
+                        <a href={href || "#"} onClick={(e) => handleItemClick(it, e, onNavigate)} className={className}>
+                          {content}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -326,6 +362,7 @@ function MegaPanel({ item }: { item: NavItem }) {
 export function Header() {
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -352,13 +389,13 @@ export function Header() {
         <div className="container-proton">
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Logo */}
-            <a
-              href="#"
+            <Link
+              href="/"
               aria-label="ChitraTap home"
               className="shrink-0"
             >
               <ProtonLogo />
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden items-center lg:flex">
@@ -385,28 +422,28 @@ export function Header() {
                       />
                     </button>
 
-                    {open === item.label && <MegaPanel item={item} />}
+                    {open === item.label && <MegaPanel item={item} onNavigate={() => setOpen(null)} />}
                   </div>
                 ) : (
-                  <a
+                  <Link
                     key={item.label}
-                    href={item.href}
+                    href={item.href || "/"}
                     className="rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-[#2c1a7a] transition-colors hover:bg-accent hover:text-[#2c1a7a]"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 )
               )}
             </nav>
 
             {/* Right side */}
             <div className="flex items-center gap-2">
-              <a
+              <Link
                 href="/login"
                 className="hidden rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-[#2c1a7a] transition-colors hover:bg-accent md:inline-flex"
               >
                 Login
-              </a>
+              </Link>
 
               <button
                 type="button"
@@ -417,7 +454,7 @@ export function Header() {
               </button>
 
               {/* Mobile trigger */}
-              <Sheet>
+              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
                   <button
                     type="button"
@@ -464,21 +501,38 @@ export function Header() {
                                     </p>
 
                                     <ul className="space-y-0.5">
-                                      {col.items.map((it) => (
-                                        <li key={it.label}>
-                                          <a
-                                            href={it.href || "#"}
-                                            onClick={(e) => handleItemClick(it, e)}
-                                            className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-accent"
-                                          >
-                                            <span className="font-medium text-[#2c1a7a]">
-                                              {it.label}
-                                            </span>
+                                      {col.items.map((it) => {
+                                        const href = resolveHref(it.href);
+                                        return (
+                                          <li key={it.label}>
+                                            {href?.startsWith("/") ? (
+                                              <Link
+                                                href={href}
+                                                onClick={() => setMenuOpen(false)}
+                                                className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-accent"
+                                              >
+                                                <span className="font-medium text-[#2c1a7a]">
+                                                  {it.label}
+                                                </span>
 
-                                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                          </a>
-                                        </li>
-                                      ))}
+                                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                              </Link>
+                                            ) : (
+                                              <a
+                                                href={href || "#"}
+                                                onClick={(e) => handleItemClick(it, e, () => setMenuOpen(false))}
+                                                className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-accent"
+                                              >
+                                                <span className="font-medium text-[#2c1a7a]">
+                                                  {it.label}
+                                                </span>
+
+                                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                              </a>
+                                            )}
+                                          </li>
+                                        );
+                                      })}
                                     </ul>
                                   </div>
                                 ))}
@@ -489,15 +543,16 @@ export function Header() {
                       </Accordion>
 
                       {NAV.filter((n) => !n.columns).map((item) => (
-                        <a
+                        <Link
                           key={item.label}
-                          href={item.href}
+                          href={resolveHref(item.href) || "/"}
+                          onClick={() => setMenuOpen(false)}
                           className="flex items-center justify-between border-b border-border py-3 text-base font-medium text-[#2c1a7a]"
                         >
                           {item.label}
 
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        </a>
+                        </Link>
                       ))}
                     </div>
 
@@ -505,18 +560,22 @@ export function Header() {
                     <div className="border-t border-border p-4">
                       <button
                         type="button"
-                        onClick={openRequestForm}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          openRequestForm();
+                        }}
                         className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground shadow-brand"
                       >
                         Get Tap Chitra
                       </button>
 
-                      <a
+                      <Link
                         href="/login"
+                        onClick={() => setMenuOpen(false)}
                         className="mt-2 flex w-full items-center justify-center rounded-xl border border-border px-4 py-3 text-sm font-medium text-[#2c1a7a]"
                       >
                         Login
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </SheetContent>
