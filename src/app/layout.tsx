@@ -123,19 +123,6 @@ const jsonLd = {
       publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: "en",
     },
-    {
-      "@type": "Product",
-      name: SITE_NAME,
-      description: SITE_DESCRIPTION,
-      brand: { "@id": `${SITE_URL}/#organization` },
-      url: SITE_URL,
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "NPR",
-        availability: "https://schema.org/InStock",
-        url: SITE_URL,
-      },
-    },
   ],
 };
 
